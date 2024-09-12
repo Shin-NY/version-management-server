@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modules</title>
+    <script src="index.js"></script>
+</head>
+<body>
+  <button id="logout_button">로그아웃</button>
+    <form action="/modules" method="post">
+        <ul>
+          <li>
+            <label for="name">모듈 이름:</label>
+            <input required type="text" id="name" name="name" />
+          </li>
+          <li>
+            <label for="version">버전:</label>
+            <input required type="text" id="version" name="version" />
+          </li>
+          <li>
+            <label for="hash">해시 값:</label>
+            <input required type="text" id="hash" name="hash" />
+          </li>
+        </ul>
+        <button>업로드</button>
+      </form>
+
+      <h2>업로드된 모듈 목록</h2>
+      <ul id="modules_list"></ul>
+</body>
+</html>
