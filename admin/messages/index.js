@@ -15,9 +15,7 @@ const setLogoutButton = () => {
 const fetchMessages = async () => {
   const list = document.getElementById('messages_list');
   if (list) {
-    const messages = await fetch('http://localhost:3000/api/messages').then(
-      (res) => res.json(),
-    );
+    const messages = await fetch('/api/messages').then((res) => res.json());
 
     messages.forEach(({ title, message }) => {
       const li = document.createElement('li');

@@ -16,9 +16,7 @@ const fetchMessages = async () => {
   const list = document.getElementById('modules_list');
   if (!list) return;
 
-  const modules = await fetch('http://localhost:3000/api/modules').then((res) =>
-    res.json(),
-  );
+  const modules = await fetch('/api/modules').then((res) => res.json());
 
   modules.forEach(({ name, version, hash }) => {
     const li = document.createElement('li');

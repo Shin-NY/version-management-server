@@ -6,7 +6,7 @@ const main = () => {
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
-      const res = await fetch('http://localhost:3000/', {
+      const res = await fetch('/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
