@@ -12,6 +12,25 @@ const setLogoutButton = () => {
   button.onclick = logout;
 };
 
+const setUploadButton = () => {
+  const form = document.getElementById('message_upload_form');
+  form.onsubmit = async (ev) => {
+    ev.preventDefault();
+    const title = document.getElementById('title').value;
+    const message = document.getElementById('message').value;
+
+    await fetch('/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title, message }),
+    });
+
+    location.reload();
+  };
+};
+
 const fetchMessages = async () => {
   const list = document.getElementById('messages_list');
   if (list) {
@@ -32,6 +51,7 @@ const fetchMessages = async () => {
 
 const main = async () => {
   setLogoutButton();
+  setUploadButton();
   await fetchMessages();
 };
 
