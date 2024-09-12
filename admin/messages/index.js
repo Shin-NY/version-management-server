@@ -7,28 +7,20 @@ const logout = () => {
   window.location.href = '/';
 };
 
-const setLogoutButton = () => {
-  const button = document.getElementById('logout_button');
-  button.onclick = logout;
-};
+const handleSubmit = async (ev) => {
+  ev.preventDefault();
+  const title = document.getElementById('title').value;
+  const message = document.getElementById('message').value;
 
-const setUploadButton = () => {
-  const form = document.getElementById('message_upload_form');
-  form.onsubmit = async (ev) => {
-    ev.preventDefault();
-    const title = document.getElementById('title').value;
-    const message = document.getElementById('message').value;
+  await fetch('/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, message }),
+  });
 
-    await fetch('/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title, message }),
-    });
-
-    location.reload();
-  };
+  location.reload();
 };
 
 const fetchMessages = async () => {
@@ -50,8 +42,12 @@ const fetchMessages = async () => {
 };
 
 const main = async () => {
-  setLogoutButton();
-  setUploadButton();
+  const button = document.getElementById('logout_button');
+  button.onclick = logout;
+
+  const form = document.getElementById('message_upload_form');
+  form.onsubmit = handleSubmit;
+
   await fetchMessages();
 };
 

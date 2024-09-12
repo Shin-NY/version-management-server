@@ -7,11 +7,6 @@ const logout = () => {
   window.location.href = '/';
 };
 
-const setLogoutButton = () => {
-  const button = document.getElementById('logout_button');
-  button.onclick = logout;
-};
-
 const fetchMessages = async () => {
   const list = document.getElementById('modules_list');
   if (!list) return;
@@ -33,29 +28,30 @@ const fetchMessages = async () => {
   });
 };
 
-const setUploadButton = () => {
-  const form = document.getElementById('module_upload_form');
-  form.onsubmit = async (ev) => {
-    ev.preventDefault();
-    const name = document.getElementById('name').value;
-    const version = document.getElementById('version').value;
-    const hash = document.getElementById('hash').value;
+const handleSubmit = async (ev) => {
+  ev.preventDefault();
+  const name = document.getElementById('name').value;
+  const version = document.getElementById('version').value;
+  const hash = document.getElementById('hash').value;
 
-    await fetch('/modules', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, version, hash }),
-    });
+  await fetch('/modules', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, version, hash }),
+  });
 
-    location.reload();
-  };
+  location.reload();
 };
 
 const main = async () => {
-  setLogoutButton();
-  setUploadButton();
+  const button = document.getElementById('logout_button');
+  button.onclick = logout;
+
+  const form = document.getElementById('module_upload_form');
+  form.onsubmit = handleSubmit;
+
   await fetchMessages();
 };
 
