@@ -4,14 +4,14 @@ const logout = () => {
       .replace(/^ +/, '')
       .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
   });
-  window.location.href = '/';
+  window.location.href = '/admin';
 };
 
-const fetchMessages = async () => {
+const fetchModules = async () => {
   const list = document.getElementById('modules_list');
   if (!list) return;
 
-  const modules = await fetch('/api/modules').then((res) => res.json());
+  const modules = await fetch('/modules').then((res) => res.json());
 
   modules.forEach(({ name, version, hash }) => {
     const li = document.createElement('li');
@@ -52,8 +52,8 @@ const main = async () => {
   const form = document.getElementById('module_upload_form');
   form.onsubmit = handleSubmit;
 
-  await fetchMessages();
+  await fetchModules();
 };
 
-if (!document.cookie) window.location.replace('/');
+if (!document.cookie) window.location.replace('/admin');
 window.onload = main;

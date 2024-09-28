@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateAccountFailRes,
   CreateAccountSuccessRes,
-} from 'src/dtos/create-account.dto';
-import { User } from 'src/entities/user.entity';
+} from 'src/auth/dtos/create-account.dto';
+import { User } from 'src/auth/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { HASH_ROUNDS } from 'src/constants';
-import { LoginFailRes, LoginSuccessRes } from 'src/dtos/login.dto';
+import { LoginFailRes, LoginSuccessRes } from 'src/auth/dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { HASH_ROUNDS } from './auth.constants';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +24,12 @@ export class AuthService {
     password: string,
   ): Promise<CreateAccountSuccessRes | CreateAccountFailRes> {
     try {
+      //나중에 어드민만 검색하도록 수정
+      const existingUsers = await this.usersRepo.find();
+      if (existingUsers.length > 0) {
+        return { ok: false, error: 'account already exists' };
+      }
+
       const hashed = await bcrypt.hash(password, HASH_ROUNDS);
       const newUser = this.usersRepo.create({
         username,

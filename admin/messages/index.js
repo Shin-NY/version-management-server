@@ -4,7 +4,7 @@ const logout = () => {
       .replace(/^ +/, '')
       .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
   });
-  window.location.href = '/';
+  window.location.href = '/admin';
 };
 
 const handleSubmit = async (ev) => {
@@ -26,7 +26,7 @@ const handleSubmit = async (ev) => {
 const fetchMessages = async () => {
   const list = document.getElementById('messages_list');
   if (list) {
-    const messages = await fetch('/api/messages').then((res) => res.json());
+    const messages = await fetch('/messages').then((res) => res.json());
 
     messages.forEach(({ title, message }) => {
       const li = document.createElement('li');
@@ -51,5 +51,5 @@ const main = async () => {
   await fetchMessages();
 };
 
-if (!document.cookie) window.location.replace('/');
+if (!document.cookie) window.location.replace('/admin');
 window.onload = main;

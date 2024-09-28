@@ -7,16 +7,15 @@ const main = () => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    const res = await fetch('/', {
+    const res = await fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ username, password }),
     }).then((res) => res.json());
-    if (res?.token) {
-      document.cookie = `token=${res.token}`;
-      window.location.href = '/modules';
+    if (res?.ok) {
+      window.location.href = '/admin/modules';
     }
   };
 };
