@@ -1,11 +1,4 @@
-const logout = () => {
-  document.cookie.split(';').forEach(function (c) {
-    document.cookie = c
-      .replace(/^ +/, '')
-      .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
-  });
-  window.location.href = '/admin';
-};
+import { logout, redirectIfLoggedOut } from '../utils.js';
 
 const handleSubmit = async (ev) => {
   ev.preventDefault();
@@ -51,5 +44,5 @@ const main = async () => {
   await fetchMessages();
 };
 
-if (!document.cookie) window.location.replace('/admin');
+redirectIfLoggedOut();
 window.onload = main;

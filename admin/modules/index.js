@@ -1,11 +1,4 @@
-const logout = () => {
-  document.cookie.split(';').forEach(function (c) {
-    document.cookie = c
-      .replace(/^ +/, '')
-      .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
-  });
-  window.location.href = '/admin';
-};
+import { logout, redirectIfLoggedOut } from '../utils.js';
 
 const fetchModules = async () => {
   const list = document.getElementById('modules_list');
@@ -13,18 +6,18 @@ const fetchModules = async () => {
 
   const modules = await fetch('/modules').then((res) => res.json());
 
-  modules.forEach(({ name, version, hash }) => {
-    const li = document.createElement('li');
-    const h2 = document.createElement('h2');
-    h2.innerText = name;
-    const h3Version = document.createElement('h3');
-    h3Version.innerText = version;
-    const h3Hash = document.createElement('h3');
-    h3Hash.innerText = hash;
-    li.appendChild(h2);
-    li.appendChild(h3Version);
-    li.appendChild(h3Hash);
-    list.appendChild(li);
+  modules.forEach(({ name, version, hash, id }) => {
+    list.insertAdjacentHTML(
+      'beforeend',
+      `
+        <li>
+          <h2>${name}</h2>
+          <h3>${version}</h3>
+          <h3>${hash}</h3>
+          <a href="/modules/${id}" download>모듈 다운로드</a>
+        </li>
+      `,
+    );
   });
 };
 
@@ -33,13 +26,17 @@ const handleSubmit = async (ev) => {
   const name = document.getElementById('name').value;
   const version = document.getElementById('version').value;
   const hash = document.getElementById('hash').value;
+  const module = document.getElementById('module').files[0];
+
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('version', version);
+  formData.append('hash', hash);
+  formData.append('module', module);
 
   await fetch('/modules', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ name, version, hash }),
+    body: formData,
   });
 
   location.reload();
@@ -55,5 +52,5 @@ const main = async () => {
   await fetchModules();
 };
 
-if (!document.cookie) window.location.replace('/admin');
+redirectIfLoggedOut();
 window.onload = main;
