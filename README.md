@@ -17,13 +17,23 @@ curl -d '{"username":"admin", "password":"admin"}' \
 ```
 
 ## 서버 api 구조
-* /admin - 어드민 로그인 페이지
-  * /admin/modules - 어드민 모듈 업로드 페이지
-  * /admin/messages - 어드민 메세지 업로드 페이지
+* 어드민 페이지
+  * /admin - 어드민 로그인 페이지
+  * /admin/modules - 모듈 목록 & 모듈 업로드 페이지
+  * /admin/modules/detail?module_id={id} - 모듈 상세 페이지 (버전 목록)
+  * /admin/messages - 메세지 목록 & 메세지 업로드 페이지
 
-* /create-account - 계정 생성 api
-* /login - 로그인 api
-
-* /modules - 업로드된 모듈 정보를 json으로 받는 api
-* /modules/:id - 해당 id의 모듈을 다운로드 받는 api
-* /messages - 업로드된 메세지 정보를 json으로 받는 api
+* api 목록
+  * POST /create-account - 계정 생성 api
+  * POST /login - 로그인 api
+  * 
+  * GET /modules - 모듈 목록을 json으로 받는 api
+  * POST /modules - 새로운 모듈을 생성하는 api
+  * 
+  * GET /modules/{module_id}/versions - 모듈의 버전 목록을 json으로 받는 api
+  * POST /modules/{module_id}/versions - 모듈에 새로운 버전을 생성하는 api
+  * 
+  * GET /modules/versions/{version_id} - 해당 id의 버전을 다운로드 받는 api
+  * 
+  * GET /messages - 업로드된 메세지 정보를 json으로 받는 api
+  * POST /messages - 새로운 메세지를 생성하는 api
