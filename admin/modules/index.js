@@ -6,37 +6,29 @@ const fetchModules = async () => {
 
   const modules = await fetch('/modules').then((res) => res.json());
 
-  modules.forEach(({ name, version, hash, id }) => {
+  modules.forEach(({ name, id }) => {
     list.insertAdjacentHTML(
       'beforeend',
       `
         <li>
           <h2>${name}</h2>
-          <h3>${version}</h3>
-          <h3>${hash}</h3>
-          <a href="/modules/${id}" download>모듈 다운로드</a>
+          <a href="/admin/modules/detail?module_id=${id}">모듈 상세</a>
         </li>
       `,
     );
   });
 };
 
-const handleSubmit = async (ev) => {
+const handleCreateModule = async (ev) => {
   ev.preventDefault();
   const name = document.getElementById('name').value;
-  const version = document.getElementById('version').value;
-  const hash = document.getElementById('hash').value;
-  const module = document.getElementById('module').files[0];
-
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('version', version);
-  formData.append('hash', hash);
-  formData.append('module', module);
 
   await fetch('/modules', {
     method: 'POST',
-    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name }),
   });
 
   location.reload();
@@ -46,8 +38,8 @@ const main = async () => {
   const button = document.getElementById('logout_button');
   button.onclick = logout;
 
-  const form = document.getElementById('module_upload_form');
-  form.onsubmit = handleSubmit;
+  const form = document.getElementById('create_module_form');
+  form.onsubmit = handleCreateModule;
 
   await fetchModules();
 };

@@ -15,24 +15,43 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Response } from 'express';
 import { existsSync, mkdirSync } from 'fs';
+import { CreateModuleVersionInput } from './dtos/create-module-version.dto';
+import { CreateModuleInfoInput } from './dtos/create-module-info.dto';
+import { GetVersionsFail, GetVersionsSuc } from './dtos/get-versions-dto';
 
 @Controller('modules')
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
+
+  @UseGuards(AuthGuard)
+  @Post('/')
+  async createModuleInfo(@Body() body: CreateModuleInfoInput) {
+    return this.moduleService.createModuleInfo(body);
+  }
 
   @Get('/')
   async getModuleInfos(): Promise<ModuleInfo[]> {
     return this.moduleService.getModuleInfos();
   }
 
-  @Post('/')
+  @Get('/:moduleId/versions')
+  async getVersions(
+    @Param() params: { moduleId: string },
+  ): Promise<GetVersionsSuc | GetVersionsFail> {
+    return this.moduleService.getVersions({
+      moduleId: Number(params.moduleId),
+    });
+  }
+
+  @Post('/:moduleId/versions')
   @UseGuards(AuthGuard)
   @UseInterceptors(
-    FileInterceptor('module', {
+    FileInterceptor('file', {
       storage: diskStorage({
         destination: function (req, _, cb) {
-          const { name, version } = req.body;
-          const path = `./uploaded_modules/${name}-${version}`;
+          const { moduleId } = req.params as any;
+          const { version } = req.body;
+          const path = `./uploaded_modules/${moduleId}-${version}`;
           if (!existsSync(path)) mkdirSync(path, { recursive: true });
           cb(null, path);
         },
@@ -42,15 +61,25 @@ export class ModuleController {
       }),
     }),
   )
-  async uploadModule(@Body() body: ModuleInfo): Promise<void> {
-    const { name, version, hash } = body;
-    await this.moduleService.uploadModuleInfo(name, version, hash);
+  async createModuleVersion(
+    @Param() params: { moduleId: string },
+    @Body() body: CreateModuleVersionInput,
+  ): Promise<void> {
+    await this.moduleService.createModuleVersion({
+      ...body,
+      moduleId: Number(params.moduleId),
+    });
   }
 
-  @Get(':id')
+  @Get('/versions/:versionId')
   @UseGuards(AuthGuard)
-  async downloadModule(@Param() params: any, @Res() res: Response) {
-    const result = await this.moduleService.getModuleFile(params.id);
+  async downloadModule(
+    @Param() params: { versionId: string },
+    @Res() res: Response,
+  ) {
+    const result = await this.moduleService.getModuleFile(
+      Number(params.versionId),
+    );
     if (result.ok) {
       const { file, filename } = result;
       res.set({

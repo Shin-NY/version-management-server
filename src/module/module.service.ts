@@ -4,6 +4,14 @@ import { createReadStream, readdirSync } from 'fs';
 import { join } from 'path';
 import { ModuleInfo } from 'src/module/entities/module-info.entity';
 import { Repository } from 'typeorm';
+import { CreateModuleVersionInput } from './dtos/create-module-version.dto';
+import { ModuleVersion } from './entities/module-version.entity';
+import { CreateModuleInfoInput } from './dtos/create-module-info.dto';
+import {
+  GetVersionsFail,
+  GetVersionsInput,
+  GetVersionsSuc,
+} from './dtos/get-versions-dto';
 import {
   GetModuleFileFail,
   GetModuleFileSuc,
@@ -14,27 +22,67 @@ export class ModuleService {
   constructor(
     @InjectRepository(ModuleInfo)
     private readonly moduleInfosRepo: Repository<ModuleInfo>,
+    @InjectRepository(ModuleVersion)
+    private readonly moduleVersionsRepo: Repository<ModuleVersion>,
   ) {}
-  async getModuleInfos(): Promise<ModuleInfo[]> {
-    return await this.moduleInfosRepo.find({ order: { createdAt: 'DESC' } });
+
+  async createModuleInfo(input: CreateModuleInfoInput) {
+    await this.moduleInfosRepo.save(
+      this.moduleInfosRepo.create({ name: input.name }),
+    );
   }
 
-  async uploadModuleInfo(name: string, version: string, hash: string) {
-    const newModuleInfo = this.moduleInfosRepo.create({ name, version, hash });
-    await this.moduleInfosRepo.save(newModuleInfo);
+  async getModuleInfos(): Promise<ModuleInfo[]> {
+    return await this.moduleInfosRepo.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getVersions({
+    moduleId,
+  }: GetVersionsInput): Promise<GetVersionsSuc | GetVersionsFail> {
+    const moduleInfo = await this.moduleVersionsRepo.find({
+      where: {
+        module: { id: moduleId },
+      },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!moduleInfo) return { ok: false };
+
+    return { ok: true, result: moduleInfo };
+  }
+
+  async createModuleVersion({
+    moduleId,
+    version,
+    hash,
+  }: CreateModuleVersionInput) {
+    const newModuleVersion = this.moduleVersionsRepo.create({
+      module: { id: moduleId },
+      version,
+      hash,
+    });
+    await this.moduleVersionsRepo.save(newModuleVersion);
   }
 
   async getModuleFile(
-    moduleId: number,
+    versionId: number,
   ): Promise<GetModuleFileSuc | GetModuleFileFail> {
-    const moduleInfo = await this.moduleInfosRepo.findOneBy({ id: moduleId });
-    if (!moduleInfo) return { ok: false };
+    const version = await this.moduleVersionsRepo.findOne({
+      where: {
+        id: versionId,
+      },
+      loadRelationIds: { relations: ['module'] },
+    });
+
+    if (!version) return { ok: false };
 
     const [filename] = readdirSync(
       join(
         process.cwd(),
         'uploaded_modules',
-        `${moduleInfo.name}-${moduleInfo.version}`,
+        `${version.moduleId}-${version.version}`,
       ),
     );
 
@@ -42,7 +90,7 @@ export class ModuleService {
       join(
         process.cwd(),
         'uploaded_modules',
-        `${moduleInfo.name}-${moduleInfo.version}`,
+        `${version.moduleId}-${version.version}`,
         filename,
       ),
     );

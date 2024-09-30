@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ModuleVersion } from './module-version.entity';
 
 @Entity()
 export class ModuleInfo {
@@ -20,9 +22,6 @@ export class ModuleInfo {
   @Column()
   name: string;
 
-  @Column()
-  version: string;
-
-  @Column()
-  hash: string;
+  @OneToMany(() => ModuleVersion, (version) => version.module)
+  versions: ModuleVersion[];
 }
