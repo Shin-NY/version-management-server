@@ -15,7 +15,7 @@ const main = () => {
       body: JSON.stringify({ username, password }),
     }).then((res) => res.json());
     if (res?.ok) {
-      window.location.href = '/admin/modules';
+      window.location.href = '/admin/agent-version';
     } else {
       alert(res.error);
     }

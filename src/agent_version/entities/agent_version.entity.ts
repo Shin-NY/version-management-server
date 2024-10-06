@@ -2,14 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ModuleVersion } from './module-version.entity';
 
 @Entity()
-export class ModuleInfo {
+export class AgentVersion {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,9 +17,6 @@ export class ModuleInfo {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
-  name: string;
-
-  @OneToMany(() => ModuleVersion, (version) => version.module)
-  versions: ModuleVersion[];
+  @Column({ unique: true })
+  version: string;
 }

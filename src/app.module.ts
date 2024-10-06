@@ -3,8 +3,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { MessageModule } from './message/message.module';
-import { ModuleModule } from './module/module.module';
+import { AgentVersionModule } from './agent_version/agent_version.module';
 
 @Module({
   imports: [
@@ -19,8 +18,7 @@ import { ModuleModule } from './module/module.module';
       serveRoot: '/admin',
     }),
     AuthModule,
-    ModuleModule,
-    MessageModule,
+    AgentVersionModule,
   ],
   controllers: [],
   providers: [],
