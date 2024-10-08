@@ -60,7 +60,7 @@ export class AgentVersionService {
         join(UPLOADED_AGENT_DIR_NAME, UPLOADED_AGENT_ZIP_FILE_NAME),
       );
       archive.pipe(archiveDest);
-      archive.finalize();
+      await archive.finalize();
 
       return { ok: true };
     } catch (e) {
