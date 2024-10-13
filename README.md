@@ -11,9 +11,11 @@ JWT_KEY="임의 문자열"
 
 ## 서버 api 구조
 * 어드민 페이지
-  * /admin - 어드민 로그인 페이지
-  * /admin/create-account - 어드민 계정 생성 페이지 (1개까지만 생성됨)
-  * /admin/agent-version - 에이전트의 현재 버전 확인 & 새로운 버전 업로드 페이지
+  * /admin - 어드민 계정으로 로그인하는 페이지
+  * /admin/create-account - 어드민 계정을 생성하는 페이지 (1개까지만 생성됨)
+  * /admin/agent-version - 에이전트의 현재 버전을 확인하는 페이지
+  * /admin/agent-update - 새로운 버전을 업로드하는 페이지
+  * /admin/messages - 메세지 관리하는 페이지 (임시)
 
 * api 목록
   * POST /create-account - 계정 생성 api
