@@ -14,9 +14,9 @@
 
     <nav>
       <ul>
-        <li><a href="/admin/messages">Messages</a></li>
-        <li><a href="/admin/agent-version">Agent Version</a></li>
-        <li><a href="/admin/agent-update">Agent Update</a></li>
+        <li><a href="../messages/manage_messages.html">Messages</a></li>
+        <li><a href="../agent-version/manage_version.html">Agent Version</a></li>
+        <li><a href="../agent-update/update.html">Agent Update</a></li>
         <button id="logout_button">로그아웃</button>
       </ul>
     </nav>
@@ -27,7 +27,7 @@
         <form id="create_version_form">
           <label for="version">새로운 에이전트 버전:</label>
           <input required type="text" id="version" name="version" />
-          <label for="files">파일 (여러 개 선택 가능):</label>
+          <label for="files">파일:</label>
           <input required type="file" id="files" name="files" multiple />
           <button>새 버전 생성</button>
         </form>

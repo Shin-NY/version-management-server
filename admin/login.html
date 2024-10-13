@@ -3,27 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
     <script src="index.js"></script>
-    <link rel="stylesheet" href="../styles.css" />
-    <title>Create admin account - Admin Dashboard</title>
+
+    <title>Login - Admin Dashboard</title>
   </head>
   <body>
     <header>
-      <h1>Create admin account - Admin Dashboard</h1>
+      <h1>Login - Admin Dashboard</h1>
     </header>
 
     <main>
       <section>
-        <h2>어드민 계정 생성</h2>
-        <form id="signup_form">
+        <h2>로그인</h2>
+        <form id="login_form">
           <label for="username">아이디:</label>
           <input required type="text" id="username" name="username" />
           <label for="password">비밀번호:</label>
           <input required type="password" id="password" name="password" />
-          <button>계정 생성</button>
+          <br>
+          <button>로그인</button>
         </form>
       </section>
-      <a href="/admin/">로그인 페이지</a>
+      <a href="create-account/account.html">어드민 계정 생성</a>
     </main>
 
     <footer>
