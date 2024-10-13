@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../styles.css" />
     <script type="module" src="index.js"></script>
-
-    <title>Manage Modules - Admin Dashboard</title>
+    <title>Agent Updates - Admin Dashboard</title>
   </head>
   <body>
     <header>
-      <h1>Manage Modules - Admin Dashboard</h1>
+      <h1>Agent Updates - Admin Dashboard</h1>
     </header>
 
     <nav>
@@ -24,8 +23,14 @@
 
     <main>
       <section>
-        <h2>현재 버전</h2>
-        <ul id="cur_version_info"></ul>
+        <h2>Update Agent Software</h2>
+        <form id="create_version_form">
+          <label for="version">새로운 에이전트 버전:</label>
+          <input required type="text" id="version" name="version" />
+          <label for="files">파일 (여러 개 선택 가능):</label>
+          <input required type="file" id="files" name="files" multiple />
+          <button>새 버전 생성</button>
+        </form>
       </section>
     </main>
 
