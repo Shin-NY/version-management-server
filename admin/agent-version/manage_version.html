@@ -1,93 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles.css" />
+    <script type="module" src="index.js"></script>
+
     <title>Manage Modules - Admin Dashboard</title>
+
     <script>
-        function toggleDescription(id) {
-            var element = document.getElementById(id);
-            if (element.style.display === "none") {
-                element.style.display = "table-row";
-            } else {
-                element.style.display = "none";
-            }
-        }
+      function toggleDescription(id) {
+          var element = document.getElementById(id);
+          if (element.style.display === "none") {
+              element.style.display = "table-row";
+          } else {
+              element.style.display = "none";
+          }
+      }
     </script>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+     <style>
+      table {
+          width: 100%;
+          border-collapse: collapse;
+      }
 
-        thead {
-            position: sticky;
-            top: 0;
-            background-color: #4CAF50;
-            color: white;
-        }
+      thead {
+          position: sticky;
+          top: 0;
+          background-color: #4CAF50;
+          color: white;
+      }
 
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
+      table th, table td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+      }
 
-        /* Alternate row colors */
-        tbody tr:nth-child(odd) {
-            background-color: #f9f9f9;
-        }
+      /* Alternate row colors */
+      tbody tr:nth-child(odd) {
+          background-color: #f9f9f9;
+      }
 
-        tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+      tbody tr:nth-child(even) {
+          background-color: #f2f2f2;
+      }
 
-        /* Hover effect for version rows */
-        tbody tr {
-            cursor: pointer;
-        }
+      /* Hover effect for version rows */
+      tbody tr {
+          cursor: pointer;
+      }
 
-        tbody tr:hover {
-            background-color: #ddd;
-        }
+      tbody tr:hover {
+          background-color: #ddd;
+      }
 
-        tbody tr td[colspan="2"] {
-            background-color: #fff;
-        }
+      tbody tr td[colspan="2"] {
+          background-color: #fff;
+      }
 
-        /* Style for download button */
-        .download-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 8px 16px;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-        }
+      /* Style for download button */
+      .download-btn {
+          background-color: #4CAF50;
+          color: white;
+          padding: 8px 16px;
+          text-decoration: none;
+          border-radius: 4px;
+          display: inline-block;
+      }
 
-        .download-btn:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
+      .download-btn:hover {
+          background-color: #45a049;
+      }
+  </style>
+  </head>
+  <body>
+    <header>
+      <h1>Manage Modules - Admin Dashboard</h1>
+    </header>
 
-<header>
-    <h1>Manage Modules - Admin Dashboard</h1>
-</header>
+    <nav>
+      <ul>
+        <li><a href="../messages/manage_messages.html">Messages</a></li>
+        <li><a href="../agent-version/manage_version.html">Agent Version</a></li>
+        <li><a href="../agent-update/update.html">Agent Update</a></li>
+        <button id="logout_button">로그아웃</button>
+      </ul>
+    </nav>
 
-<nav>
-    <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="manage_messages.html">Manage Messages</a></li>
-        <li><a href="manage_modules.html">Manage Modules</a></li>
-        <li><a href="update_agent.html">Agent Updates</a></li>
-    </ul>
-</nav>
-
-<main>
-    <section>
+    <main>
+      <section>
         <h2>Agent Module Versions</h2>
         <table>
             <thead>
@@ -143,11 +145,10 @@
             </tbody>
         </table>
     </section>
-</main>
+    </main>
 
-<footer>
-    <p>Admin Dashboard © 2024</p>
-</footer>
-
-</body>
+    <footer>
+      <p>Admin Dashboard © 2024</p>
+    </footer>
+  </body>
 </html>
