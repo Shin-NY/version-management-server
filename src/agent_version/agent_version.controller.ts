@@ -21,23 +21,10 @@ import {
   GetLTSAgentVersionInfoSuc,
 } from './dtos/get-lts-agent-version-info.dto';
 import { GetLTSAgentFail, GetLTSAgentSuc } from './dtos/get-lts-agent.dto';
-import {
-  ApiBody,
-  ApiConsumes,
-  ApiCreatedResponse,
-  ApiExtraModels,
-  ApiOkResponse,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
+import { ApiResponseOneOf } from 'src/swagger/api-response-oneof.decorator';
 
 @Controller('agent-versions')
-@ApiExtraModels(
-  CreateAgentVersionSuc,
-  CreateAgentVersionFail,
-  GetLTSAgentVersionInfoSuc,
-  GetLTSAgentVersionInfoFail,
-  GetLTSAgentFail,
-)
 export class AgentVersionController {
   constructor(private readonly agentVersionService: AgentVersionService) {}
 
@@ -49,13 +36,8 @@ export class AgentVersionController {
   @UseInterceptors(FilesInterceptor('files'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateAgentVersionFormData })
-  @ApiCreatedResponse({
-    schema: {
-      oneOf: [
-        { $ref: getSchemaPath(CreateAgentVersionSuc) },
-        { $ref: getSchemaPath(CreateAgentVersionFail) },
-      ],
-    },
+  @ApiResponseOneOf([CreateAgentVersionSuc, CreateAgentVersionFail], {
+    status: 201,
   })
   async createAgentVersion(
     @Body() body: CreateAgentVersionInput,
@@ -69,13 +51,8 @@ export class AgentVersionController {
    * 에이전트의 최신 버전 정보를 가져옵니다
    */
   @Get('/lts')
-  @ApiOkResponse({
-    schema: {
-      oneOf: [
-        { $ref: getSchemaPath(GetLTSAgentVersionInfoSuc) },
-        { $ref: getSchemaPath(GetLTSAgentVersionInfoFail) },
-      ],
-    },
+  @ApiResponseOneOf([GetLTSAgentVersionInfoSuc, GetLTSAgentVersionInfoFail], {
+    status: 200,
   })
   async getLTSAgentVersionInfo(): Promise<
     GetLTSAgentVersionInfoSuc | GetLTSAgentVersionInfoFail

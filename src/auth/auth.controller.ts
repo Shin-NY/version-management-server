@@ -11,19 +11,9 @@ import {
   CreateAccountSuccessRes,
 } from 'src/auth/dtos/create-account.dto';
 import { Response } from 'express';
-import {
-  ApiCreatedResponse,
-  ApiExtraModels,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiResponseOneOf } from 'src/swagger/api-response-oneof.decorator';
 
 @Controller('/')
-@ApiExtraModels(
-  LoginSuccessRes,
-  LoginFailRes,
-  CreateAccountSuccessRes,
-  CreateAccountFailRes,
-)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -31,13 +21,8 @@ export class AuthController {
    * 계정을 생성합니다
    */
   @Post('/create-account')
-  @ApiCreatedResponse({
-    schema: {
-      oneOf: [
-        { $ref: getSchemaPath(CreateAccountSuccessRes) },
-        { $ref: getSchemaPath(CreateAccountFailRes) },
-      ],
-    },
+  @ApiResponseOneOf([CreateAccountSuccessRes, CreateAccountFailRes], {
+    status: 201,
   })
   async createAccount(
     @Body() input: CreateAccountInput,
@@ -48,15 +33,8 @@ export class AuthController {
   /**
    * 로그인 후 token을 받습니다
    */
-  @ApiCreatedResponse({
-    schema: {
-      oneOf: [
-        { $ref: getSchemaPath(LoginSuccessRes) },
-        { $ref: getSchemaPath(LoginFailRes) },
-      ],
-    },
-  })
   @Post('/login')
+  @ApiResponseOneOf([LoginSuccessRes, LoginFailRes], { status: 201 })
   async login(
     @Body() input: LoginInput,
     @Res({ passthrough: true }) res: Response,
