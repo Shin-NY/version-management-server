@@ -1,38 +1,70 @@
-import { Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginFailRes, LoginSuccessRes } from 'src/auth/dtos/login.dto';
-import { User } from 'src/auth/entities/user.entity';
+import {
+  LoginFailRes,
+  LoginInput,
+  LoginSuccessRes,
+} from 'src/auth/dtos/login.dto';
 import {
   CreateAccountFailRes,
+  CreateAccountInput,
   CreateAccountSuccessRes,
 } from 'src/auth/dtos/create-account.dto';
 import { Response } from 'express';
+import {
+  ApiCreatedResponse,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
 @Controller('/')
+@ApiExtraModels(
+  LoginSuccessRes,
+  LoginFailRes,
+  CreateAccountSuccessRes,
+  CreateAccountFailRes,
+)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * 계정을 생성합니다
+   */
   @Post('/create-account')
+  @ApiCreatedResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(CreateAccountSuccessRes) },
+        { $ref: getSchemaPath(CreateAccountFailRes) },
+      ],
+    },
+  })
   async createAccount(
-    @Req() req: Request,
+    @Body() input: CreateAccountInput,
   ): Promise<CreateAccountSuccessRes | CreateAccountFailRes> {
-    const { username, password } = req.body as unknown as Pick<
-      User,
-      'username' | 'password'
-    >;
-    return await this.authService.createAccount(username, password);
+    return await this.authService.createAccount(input.username, input.password);
   }
 
+  /**
+   * 로그인 후 token을 받습니다
+   */
+  @ApiCreatedResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(LoginSuccessRes) },
+        { $ref: getSchemaPath(LoginFailRes) },
+      ],
+    },
+  })
   @Post('/login')
   async login(
-    @Req() req: Request,
+    @Body() input: LoginInput,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginSuccessRes | LoginFailRes> {
-    const { username, password } = req.body as unknown as Pick<
-      User,
-      'username' | 'password'
-    >;
-    const loginRes = await this.authService.login(username, password);
+    const loginRes = await this.authService.login(
+      input.username,
+      input.password,
+    );
     if ('token' in loginRes) res.cookie('token', loginRes.token);
     return loginRes;
   }

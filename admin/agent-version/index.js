@@ -1,8 +1,8 @@
 import { logout, redirectIfLoggedOut } from '../utils.js';
 
 const fetchVersionInfo = async () => {
-  const list = document.getElementById('cur_version_info');
-  if (!list) return;
+  const tbody = document.getElementById('cur_version_info');
+  if (!tbody) return;
 
   const res = await fetch('/agent-versions/lts').then((res) => res.json());
   if (!res?.ok) return;
@@ -11,14 +11,23 @@ const fetchVersionInfo = async () => {
     result: { version, createdAt },
   } = res;
 
-  list.insertAdjacentHTML(
+  tbody.insertAdjacentHTML(
     'beforeend',
     `
-          <li>
-            <h2>${version}</h2>
-            <h4>${createdAt}</h4>
-            <a href="/agent-versions/lts/download">에이전트 다운로드</a>
-          </li>
+          <tr onclick="toggleDescription('desc1')">
+              <td>${version}</td>
+              <td>${new Date(createdAt).toLocaleString('ko-KR')}</td>
+            </tr>
+            <tr id="desc1" style="display: none">
+              <td colspan="2">
+                Current release of the agent module.<br />
+                <a
+                  href="/agent-versions/lts/download"
+                  class="download-btn"
+                  >Download Version ${version}</a
+                >
+              </td>
+            </tr>
         `,
   );
 };

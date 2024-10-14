@@ -8,16 +8,16 @@
     <title>Agent Updates - Admin Dashboard</title>
     <style>
       /* 체크박스와 레이블을 왼쪽 정렬하고 여백 없애기 */
-      label[for="notify_users"] {        
+      label[for='notify_users'] {
         display: inline-flex; /* 텍스트와 체크박스를 한 줄로 표시 */
-        vertical-align: top;  
-        white-space: nowrap;              
+        vertical-align: top;
+        white-space: nowrap;
       }
-      
+
       /* 체크박스 자체의 스타일도 추가할 수 있음 */
-      input[type="checkbox"] {
+      input[type='checkbox'] {
         margin-right: 5px; /* 체크박스와 텍스트 사이의 간격을 줄일 수 있음 */
-        vertical-align: middle;         
+        vertical-align: middle;
       }
     </style>
   </head>
@@ -28,9 +28,9 @@
 
     <nav>
       <ul>
-        <li><a href="../messages/manage_messages.html">Messages</a></li>
-        <li><a href="../agent-version/manage_version.html">Agent Version</a></li>
-        <li><a href="../agent-update/update.html">Agent Update</a></li>
+        <li><a href="/admin/manage-messages/">Manage Messages</a></li>
+        <li><a href="/admin/agent-version/">Agent Version</a></li>
+        <li><a href="/admin/agent-update/">Agent Update</a></li>
         <button id="logout_button">로그아웃</button>
       </ul>
     </nav>
@@ -43,15 +43,15 @@
           <input required type="text" id="version" name="version" />
           <label for="files">파일:</label>
           <input required type="file" id="files" name="files" multiple />
-          
+
           <!-- 업데이트 알림 전송 체크박스 추가 -->
-          <br><br>
+          <br /><br />
           <label for="notify_users">
-            <input type="checkbox" id="notify_users" name="notify_users">
+            <input type="checkbox" id="notify_users" name="notify_users" />
             모든 사용자에게 업데이트 알림 전송
           </label>
-          
-          <br><br>
+
+          <br /><br />
           <button>새 버전 업로드</button>
         </form>
       </section>
