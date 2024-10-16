@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent versions</title>
+    <script type="module" src="index.js"></script>
+  </head>
+  <body>
+    <button id="logout_button">로그아웃</button>
+    <h2>새 에이전트 버전 업로드</h2>
+    <form id="create_version_form">
+      <ul>
+        <li>
+          <label for="version">새로운 에이전트 버전:</label>
+          <input required type="text" id="version" name="version" />
+        </li>
+        <li>
+          <label for="files">파일 (여러 개 선택 가능):</label>
+          <input required type="file" id="files" name="files" multiple />
+        </li>
+      </ul>
+      <button>새 버전 생성</button>
+    </form>
+
+    <h2>현재 버전</h2>
+    <ul id="cur_version_info"></ul>
+  </body>
+</html>

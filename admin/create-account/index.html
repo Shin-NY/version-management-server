@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create admin account</title>
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <h3>어드민 계정 생성</h3>
+    <form id="signup_form">
+      <ul>
+        <li>
+          <label for="username">아이디:</label>
+          <input required type="text" id="username" name="username" />
+        </li>
+        <li>
+          <label for="password">비밀번호:</label>
+          <input required type="password" id="password" name="password" />
+        </li>
+      </ul>
+      <button>계정 생성</button>
+    </form>
+    <a href="/admin/">로그인</a>
+  </body>
+</html>
