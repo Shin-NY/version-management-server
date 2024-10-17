@@ -1,0 +1,80 @@
+{
+    "programName": "Caluclator",
+    "version": "2.1.0",
+    "modules": [
+      {
+        "moduleName": "CoreModule",
+        "description": "Handles core system functionalities.",
+        "version": "1.2.0",
+        "lastUpdated": "2024-10-15T12:00:00Z",
+        "files": [
+          {
+            "fileName": "core_main.py",
+            "filePath": "/path/to/core_main.py",
+            "hash": "abcdef123456",
+            "sizeKB": 150.5
+          },
+          {
+            "fileName": "core_helper.py",
+            "filePath": "/path/to/core_helper.py",
+            "hash": "123abc456def",
+            "sizeKB": 75.3
+          }
+        ],
+        "dependencies": [
+          {
+            "moduleName": "LoggerModule",
+            "requiredVersion": "1.0.0"
+          }
+        ]
+      },
+      {
+        "moduleName": "LoggerModule",
+        "description": "Provides logging functionalities.",
+        "version": "1.1.0",
+        "lastUpdated": "2024-10-10T10:30:00Z",
+        "files": [
+          {
+            "fileName": "logger.py",
+            "filePath": "/path/to/logger.py",
+            "hash": "654fedcba321",
+            "sizeKB": 45.1
+          }
+        ],
+        "dependencies": []
+      },
+      {
+        "moduleName": "NetworkModule",
+        "description": "Manages network-related tasks.",
+        "version": "1.0.5",
+        "lastUpdated": "2024-10-12T09:00:00Z",
+        "files": [
+          {
+            "fileName": "network_manager.py",
+            "filePath": "/path/to/network_manager.py",
+            "hash": "321abc654fed",
+            "sizeKB": 120.0
+          }
+        ],
+        "dependencies": [ 
+          {
+            "moduleName": "CoreModule",
+            "requiredVersion": "1.2.0"
+          }
+        ]
+      }
+    ],
+    "updateHistory": [
+      {
+        "version": "2.1.0",
+        "date": "2024-10-15T12:00:00Z",
+        "description": "Added new features to CoreModule and updated LoggerModule for better performance."
+      },
+      {
+        "version": "2.0.0",
+        "date": "2024-10-01T11:00:00Z",
+        "description": "Initial release with CoreModule, LoggerModule, and NetworkModule."
+      }
+    ]
+  }
+  
