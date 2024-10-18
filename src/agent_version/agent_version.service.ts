@@ -11,7 +11,6 @@ import {
   GetLTSAgentVersionInfoFail,
   GetLTSAgentVersionInfoSuc,
 } from './dtos/get-lts-agent-version-info.dto';
-import { GetLTSAgentFail, GetLTSAgentSuc } from './dtos/get-lts-agent.dto';
 import { join } from 'path';
 import {
   createReadStream,
@@ -19,20 +18,28 @@ import {
   existsSync,
   mkdirSync,
   rmSync,
-  readdirSync
+  unlinkSync,
 } from 'fs';
-import { unlink } from 'fs/promises';
 import {
+  ARCHIVED_AGENT_DIR_NAME,
   UPLOADED_AGENT_DIR_NAME,
-  UPLOADED_AGENT_ZIP_FILE_NAME,
 } from './agent_version.constants';
 import * as archiver from 'archiver';
+import {
+  GetLTSAgentFail,
+  GetLTSAgentInput,
+  GetLTSAgentSuc,
+} from './dtos/get-lts-agent.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { AgentFileInfo } from './entities/agent_file_info.entity';
 
 @Injectable()
 export class AgentVersionService {
   constructor(
     @InjectRepository(AgentVersion)
     private readonly agentVersionsRepo: Repository<AgentVersion>,
+    @InjectRepository(AgentFileInfo)
+    private readonly agentFileInfosRepo: Repository<AgentFileInfo>,
   ) {}
 
   async createAgentVersion(
@@ -40,10 +47,21 @@ export class AgentVersionService {
     files: Array<Express.Multer.File>,
   ): Promise<CreateAgentVersionSuc | CreateAgentVersionFail> {
     try {
-      await this.agentVersionsRepo.save(
+      const newAgentVersion = await this.agentVersionsRepo.save(
         this.agentVersionsRepo.create({
           version,
         }),
+      );
+      /**
+       * 파일 목록을 미리 db에 저장합니다
+       */
+      files.forEach((file) =>
+        this.agentFileInfosRepo.save(
+          this.agentFileInfosRepo.create({
+            filename: file.originalname,
+            version: { id: newAgentVersion.id },
+          }),
+        ),
       );
 
       // 이전 Version의 디렉토리 삭제 및 생성
@@ -71,79 +89,75 @@ export class AgentVersionService {
     GetLTSAgentVersionInfoSuc | GetLTSAgentVersionInfoFail
   > {
     try {
+      /**
+       * db에 저장해놓은 파일 목록까지 같이 가져옵니다
+       */
       const [agentVersion] = await this.agentVersionsRepo.find({
         order: { createdAt: 'DESC' },
         take: 1,
+        relations: { fileInfos: true },
       });
-      if (!agentVersion) return { ok: false, error: 'no agent version is available' };
+      if (!agentVersion)
+        return { ok: false, error: 'no agent version is available' };
 
-      /**
-       * 여러 파일 중 어떠한 파일을 입력 받을지 선택해야하기 때문에 파일 목록을 가져오는 로직 추가했습니다.
-       */ 
-      const files = readdirSync(UPLOADED_AGENT_DIR_NAME); 
-      return { ok: true, result: { version: agentVersion.version, createdAt: agentVersion.createdAt, files } };
+      return { ok: true, result: agentVersion };
     } catch (e) {
       console.log(e);
       return { ok: false, error: 'cannot get lts agent version' };
     }
   }
 
-  async getLTSAgent(selectedFiles: string[]): Promise<StreamableFile | GetLTSAgentFail> {
-    const zipFilePath = join(UPLOADED_AGENT_DIR_NAME, UPLOADED_AGENT_ZIP_FILE_NAME);
+  async archiveAgentFiles(filenames: string[], path: string) {
+    if (!existsSync(UPLOADED_AGENT_DIR_NAME))
+      return { ok: false, error: 'agent not exists' };
+
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    });
+
+    // 입력받은 파일들 for문으로 하나씩 아카이브에 추가하는 로직
+    filenames.forEach((filename) => {
+      const filePath = join(UPLOADED_AGENT_DIR_NAME, filename);
+      if (!existsSync(filePath))
+        return { ok: false, error: `${filename} not exists` };
+
+      // 파일이 존재하면 아카이브에 추가
+      archive.file(filePath, { name: filename });
+    });
+
+    if (!existsSync(ARCHIVED_AGENT_DIR_NAME))
+      mkdirSync(ARCHIVED_AGENT_DIR_NAME);
+
+    const archiveDest = createWriteStream(path);
+    archive.pipe(archiveDest);
+
+    await archive.finalize();
+
+    return { ok: true };
+  }
+
+  async getLTSAgent({
+    filenames,
+  }: GetLTSAgentInput): Promise<GetLTSAgentSuc | GetLTSAgentFail> {
     try {
-      if (!existsSync(UPLOADED_AGENT_DIR_NAME)) {
-        return { ok: false, error: 'no agent available' };
-      }
-  
-      const archive = archiver('zip', {
-        zlib: { level: 9 },
-      });
-  
-      const archiveDest = createWriteStream(zipFilePath);
-      archive.pipe(archiveDest);
-  
-      // 입력받은 파일들 for문으로 하나씩 아카이브에 추가하는 로직
-      for (const fileName of selectedFiles) {
-        const trimmedFileName = fileName.trim();
-        const filePath = join(UPLOADED_AGENT_DIR_NAME, trimmedFileName);
-  
-        if (existsSync(filePath)) {
-          // 파일이 존재하면 아카이브에 추가
-          archive.file(filePath, { name: trimmedFileName });
-        } else {
-          console.warn(`File not found: ${filePath}`);
-        }
-      }
-  
-      await archive.finalize();
-  
+      if (!filenames.length)
+        return { ok: false, error: 'filenames should not be null' };
+
+      const archivedFilename = `${uuidv4()}.zip`;
+      const archivedPath = join(ARCHIVED_AGENT_DIR_NAME, archivedFilename);
+      const { error } = await this.archiveAgentFiles(filenames, archivedPath);
+      if (error) return { ok: false, error };
+
       // 파일 스트림 생성
-      const fileStream = createReadStream(zipFilePath);
-  
+      const archivedAgentFile = createReadStream(archivedPath);
       // 다운로드가 완료된 후 파일 삭제
-      return new Promise((resolve, reject) => {
-        fileStream.on('end', async () => {
-          try {
-            await unlink(zipFilePath); // 파일 삭제
-            console.log(`ZIP file ${zipFilePath} has been removed successfully.`);
-          } catch (err) {
-            console.error(`Error removing ZIP file: ${zipFilePath}`, err);
-          }
-        });
-  
-        fileStream.on('error', (err) => {
-          console.error(`Error reading ZIP file: ${zipFilePath}`, err);
-          reject({ ok: false, error: 'cannot get lts agent' });
-        });
-  
-        resolve(new StreamableFile(fileStream, {
-          disposition: `attachment; filename="${UPLOADED_AGENT_ZIP_FILE_NAME}"`,
-        }));
+      archivedAgentFile.on('end', () => unlinkSync(archivedPath));
+      return new StreamableFile(archivedAgentFile, {
+        disposition: `attachment; filename="agent.zip"`,
       });
-  
     } catch (e) {
       console.log(e);
       return { ok: false, error: 'cannot get lts agent' };
     }
   }
-}  
+}

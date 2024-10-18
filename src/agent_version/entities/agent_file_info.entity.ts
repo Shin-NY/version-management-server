@@ -2,14 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AgentFileInfo } from './agent_file_info.entity';
+import { AgentVersion } from './agent_version.entity';
 
 @Entity()
-export class AgentVersion {
+export class AgentFileInfo {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,9 +19,9 @@ export class AgentVersion {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ unique: true })
-  version: string;
+  @ManyToOne(() => AgentVersion, (version) => version.fileInfos)
+  version: AgentVersion;
 
-  @OneToMany(() => AgentFileInfo, (fileInfo) => fileInfo.version)
-  fileInfos: AgentFileInfo[];
+  @Column()
+  filename: string;
 }
