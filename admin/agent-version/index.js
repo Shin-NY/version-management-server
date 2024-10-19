@@ -45,10 +45,13 @@ const fetchVersionInfo = async () => {
                     .map(
                       (fileInfo) =>
                         `
-                    <div style="display:flex; gap:4px">
-                      <label  for="filename_checkbox">${fileInfo.filename}:</label>
-                      <input style="width:20px; margin:0" checked type="checkbox" class="filename_checkbox" value=${fileInfo.filename} />
-                    </div>
+                      <div style="margin-bottom:6px">
+                        <div style="display:flex; gap:4px">
+                          <input style="width:20px; margin:0" checked type="checkbox" class="filename_checkbox" value=${fileInfo.filename} />
+                          <label for="filename_checkbox">${fileInfo.filename}</label>
+                        </div>
+                        <span>hash value: ${fileInfo.hash}</span>
+                      </div>
                   `,
                     )
                     .join('')}

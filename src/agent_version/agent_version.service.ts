@@ -32,6 +32,7 @@ import {
 } from './dtos/get-lts-agent.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { AgentFileInfo } from './entities/agent_file_info.entity';
+import { createHash } from 'node:crypto';
 
 @Injectable()
 export class AgentVersionService {
@@ -42,28 +43,21 @@ export class AgentVersionService {
     private readonly agentFileInfosRepo: Repository<AgentFileInfo>,
   ) {}
 
+  async calcHashFromFile(filePath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const hash = createHash('sha256');
+      const rs = createReadStream(filePath);
+      rs.on('error', reject);
+      rs.on('data', (chunk) => hash.update(chunk));
+      rs.on('end', () => resolve(hash.digest('hex')));
+    });
+  }
+
   async createAgentVersion(
     { version }: CreateAgentVersionInput,
     files: Array<Express.Multer.File>,
   ): Promise<CreateAgentVersionSuc | CreateAgentVersionFail> {
     try {
-      const newAgentVersion = await this.agentVersionsRepo.save(
-        this.agentVersionsRepo.create({
-          version,
-        }),
-      );
-      /**
-       * 파일 목록을 미리 db에 저장합니다
-       */
-      files.forEach((file) =>
-        this.agentFileInfosRepo.save(
-          this.agentFileInfosRepo.create({
-            filename: file.originalname,
-            version: { id: newAgentVersion.id },
-          }),
-        ),
-      );
-
       // 이전 Version의 디렉토리 삭제 및 생성
       if (existsSync(UPLOADED_AGENT_DIR_NAME)) {
         rmSync(UPLOADED_AGENT_DIR_NAME, { recursive: true, force: true });
@@ -77,6 +71,27 @@ export class AgentVersionService {
         writeStream.write(file.buffer);
         writeStream.end();
       }
+
+      const newAgentVersion = await this.agentVersionsRepo.save(
+        this.agentVersionsRepo.create({
+          version,
+        }),
+      );
+      /**
+       * 파일 목록을 미리 db에 저장합니다
+       */
+      files.forEach(
+        async (file) =>
+          await this.agentFileInfosRepo.save(
+            this.agentFileInfosRepo.create({
+              filename: file.originalname,
+              hash: await this.calcHashFromFile(
+                join(UPLOADED_AGENT_DIR_NAME, file.originalname),
+              ),
+              version: { id: newAgentVersion.id },
+            }),
+          ),
+      );
 
       return { ok: true };
     } catch (e) {

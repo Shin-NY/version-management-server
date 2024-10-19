@@ -24,4 +24,7 @@ export class AgentFileInfo {
 
   @Column()
   filename: string;
+
+  @Column()
+  hash: string;
 }
