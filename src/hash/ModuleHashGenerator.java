@@ -79,7 +79,7 @@ public class ModuleHashGenerator {
 
     public static void main(String[] args) {
         ModuleHashGenerator hashGenerator = new ModuleHashGenerator();
-        String folderPath = "src/data"; // 모듈 파일이 위치한 폴더 경로
+        String folderPath = "uploaded_agent"; // 모듈 파일이 위치한 폴더 경로
         String outputPath = "src/data/module_hashes.json"; // 해시 값을 저장할 JSON 파일 경로
 
         Map<String, String> hashes = hashGenerator.generateHashesForModules(folderPath);
