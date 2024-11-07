@@ -1,5 +1,6 @@
 {
-  "programName": "Caluclator",
+  "_id": "program_unique_id",
+  "programName": "Calculator",
   "version": "2.1.0",
   "modules": [
     {
@@ -77,4 +78,3 @@
     }
   ]
 }
-  
