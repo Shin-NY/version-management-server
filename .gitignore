@@ -2,6 +2,7 @@
 /dist
 /node_modules
 /build
+/target
 
 # Logs
 logs
@@ -11,6 +12,9 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# Class
+module-hash-generator-0.0.1.jar
 
 # OS
 .DS_Store

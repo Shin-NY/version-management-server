@@ -14,6 +14,10 @@ const handleCreateVersion = async (ev) => {
     body: formData,
   });
 
+  await fetch('/api/java/ModuleHashGenerator', {
+    method: 'POST'
+  });
+
   window.location.href = '/admin/agent-version';
 };
 
