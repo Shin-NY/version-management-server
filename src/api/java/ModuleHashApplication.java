@@ -4,6 +4,8 @@ import java.io.*;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -42,9 +44,48 @@ class ModuleHashGenerator {
         return hashString.toString();
     }
 
-    public void saveToFile(ObjectNode jsonObject, String filename) {
+    public void saveModuleInfoToFile(String filePath) {
+        try {
+            Path path = Paths.get(filePath);
+
+            // 모듈 정보 수집
+            String moduleName = path.getFileName().toString();
+            String moduleVersion = "1.0.0"; // 버전은 추후 관리 방법에 따라 수정 가능
+            String moduleHash = generateFileHash(filePath);
+            String moduleUpdateDate = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+            long moduleSize = Files.size(path);
+
+            // JSON 객체 생성
+            ObjectNode moduleInfo = objectMapper.createObjectNode();
+            moduleInfo.put("name", moduleName);
+            moduleInfo.put("version", moduleVersion);
+            moduleInfo.put("hash", moduleHash);
+            moduleInfo.put("updateDate", moduleUpdateDate);
+            moduleInfo.put("size", moduleSize);
+
+            // 기존 파일에서 JSON 배열 읽기 또는 새로 생성
+            ArrayNode records;
+            String filename = moduleUpdateDate + ".json";
+            File file = new File(filename);
+            if (file.exists()) {
+                records = (ArrayNode) objectMapper.readTree(file);
+            } else {
+                records = objectMapper.createArrayNode();
+            }
+
+            // 새 모듈 정보 추가
+            records.add(moduleInfo);
+
+            // 파일에 저장
+            saveToFile(records, filename);
+        } catch (IOException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveToFile(ArrayNode jsonArray, String filename) {
         try (FileWriter file = new FileWriter(filename)) {
-            file.write(jsonObject.toPrettyString());
+            file.write(jsonArray.toPrettyString());
             file.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,6 +105,16 @@ class ModuleHashController {
     public String generateHash(@RequestParam String filePath) {
         try {
             return moduleHashGenerator.generateFileHash(filePath);
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    @GetMapping("/save-module-info")
+    public String saveModuleInfo(@RequestParam String filePath) {
+        try {
+            moduleHashGenerator.saveModuleInfoToFile(filePath);
+            return "Module information saved successfully.";
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
