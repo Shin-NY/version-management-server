@@ -12,9 +12,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootApplication
 public class ModuleHashApplication {
@@ -44,13 +43,12 @@ class ModuleHashGenerator {
         return hashString.toString();
     }
 
-    public void saveModuleInfoToFile(String filePath) {
+    public void saveModuleInfoToFile(String filePath, String version) {
         try {
             Path path = Paths.get(filePath);
 
             // 모듈 정보 수집
             String moduleName = path.getFileName().toString();
-            String moduleVersion = "1.0.0"; // 버전은 추후 관리 방법에 따라 수정 가능
             String moduleHash = generateFileHash(filePath);
             String moduleUpdateDate = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
             long moduleSize = Files.size(path);
@@ -58,7 +56,7 @@ class ModuleHashGenerator {
             // JSON 객체 생성
             ObjectNode moduleInfo = objectMapper.createObjectNode();
             moduleInfo.put("name", moduleName);
-            moduleInfo.put("version", moduleVersion);
+            moduleInfo.put("version", version);
             moduleInfo.put("hash", moduleHash);
             moduleInfo.put("updateDate", moduleUpdateDate);
             moduleInfo.put("size", moduleSize);
@@ -110,10 +108,17 @@ class ModuleHashController {
         }
     }
 
-    @GetMapping("/save-module-info")
-    public String saveModuleInfo(@RequestParam String filePath) {
+    @PostMapping("/save-module-info")
+    public String saveModuleInfo(
+            @RequestPart("version") String version,
+            @RequestPart("files") MultipartFile[] files) {
         try {
-            moduleHashGenerator.saveModuleInfoToFile(filePath);
+            for (MultipartFile file : files) {
+                // 파일을 임시 디렉토리에 저장
+                Path tempFile = Files.createTempFile("uploaded", file.getOriginalFilename());
+                file.transferTo(tempFile.toFile());
+                moduleHashGenerator.saveModuleInfoToFile(tempFile.toString(), version);
+            }
             return "Module information saved successfully.";
         } catch (Exception e) {
             return "Error: " + e.getMessage();
