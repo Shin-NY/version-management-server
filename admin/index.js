@@ -15,6 +15,7 @@ const main = () => {
       body: JSON.stringify({ username, password }),
     }).then((res) => res.json());
     if (res?.ok) {
+      localStorage.setItem('username', res.username);
       window.location.href = '/admin/agent-version';
     } else {
       alert(res.error);
