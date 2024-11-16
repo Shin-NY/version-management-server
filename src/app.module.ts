@@ -4,6 +4,7 @@ import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AgentVersionModule } from './agent_version/agent_version.module';
+import { MessagesModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AgentVersionModule } from './agent_version/agent_version.module';
     }),
     AuthModule,
     AgentVersionModule,
+    MessagesModule,
   ],
   controllers: [],
   providers: [],
