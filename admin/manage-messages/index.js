@@ -52,7 +52,7 @@ const fetchMessages = async () => {
         row.appendChild(idCell);
 
         const messageCell = document.createElement('td');
-        messageCell.textContent = message.text;
+        messageCell.textContent = message.message;
         row.appendChild(messageCell);
 
         const dateCell = document.createElement('td');

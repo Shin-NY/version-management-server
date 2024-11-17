@@ -14,8 +14,10 @@ const main = () => {
       },
       body: JSON.stringify({ username, password }),
     }).then((res) => res.json());
+    
     if (res?.ok) {
       localStorage.setItem('username', res.username);
+      console.log('Username saved to localStorage:', localStorage.getItem('username'));
       window.location.href = '/admin/agent-version';
     } else {
       alert(res.error);
