@@ -16,11 +16,9 @@ const main = () => {
     }).then((res) => res.json());
     
     if (res?.ok) {
-      localStorage.setItem('username', res.username);
+      localStorage.setItem('username', username);
       console.log('Username saved to localStorage:', localStorage.getItem('username'));
-      setTimeout(() => {
-        window.location.href = '/admin/agent-version';
-      }, 100); 
+      window.location.href = '/admin/agent-version';      
     } else {
       alert(res.error);
     }
