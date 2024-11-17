@@ -4,6 +4,9 @@ const saveMessage = async () => {
   const message = document.getElementById('message').value;
   const userId = localStorage.getItem('username'); 
 
+  console.log('Message:', message);
+  console.log('User ID:', userId);
+
   if (message.trim() === '') {
     alert('Please enter a message before saving.');
     return;
@@ -35,6 +38,8 @@ const fetchMessages = async () => {
     const response = await fetch('/message/fetch_messages');
     if (response.ok) {
       const data = await response.json();
+      console.log('Fetched messages:', data);
+
       const messageTableBody = document.querySelector('#messageTable tbody');
       messageTableBody.innerHTML = ''; // 기존 메시지 목록을 초기화
 
