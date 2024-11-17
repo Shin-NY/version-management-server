@@ -30,6 +30,7 @@ export class MessagesController {
   async fetchMessages(@Res() res: Response) {
     try {
       const messages = await this.messagesService.fetchMessages();
+      console.log('Messages:', messages);
       res.status(200).json(messages);
     } catch (error) {
       console.error('Error fetching messages:', error);
