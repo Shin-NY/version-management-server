@@ -21,4 +21,10 @@ export class MessagesService {
   async fetchMessages(): Promise<Message[]> {
     return await this.messagesRepo.find();
   }
+
+  // 메시지 삭제
+  async deleteMessage(id: string): Promise<boolean> {
+    const result = await this.messagesRepo.delete(id); 
+    return result.affected > 0;
+  }
 }
