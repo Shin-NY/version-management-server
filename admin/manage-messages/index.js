@@ -41,7 +41,7 @@ const fetchMessages = async () => {
       console.log('Fetched messages:', data);
 
       const messageTableBody = document.querySelector('#messageTable tbody');
-      messageTableBody.innerHTML = ''; // 기존 메시지 목록을 초기화
+      messageTableBody.innerHTML = ''; // 기존 메시지 목록 초기화
 
       data.forEach((message, index) => {
         const row = document.createElement('tr');
@@ -69,8 +69,8 @@ const fetchMessages = async () => {
         deleteCell.style.textAlign = 'center';
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
-        deleteButton.setAttribute('data-id', message.id);
-        deleteButton.onclick = () => deleteMessage(message.id, row); 
+        deleteButton.setAttribute('data-id', message.id); // 서버에 전달할 ID
+        deleteButton.onclick = () => deleteMessage(message.id, row); // 삭제 함수 호출
         deleteCell.appendChild(deleteButton);
         row.appendChild(deleteCell);
 
@@ -84,6 +84,7 @@ const fetchMessages = async () => {
   }
 };
 
+
 const deleteMessage = async (messageId, row) => {
   try {
     const response = await fetch(`/message/delete_message/${messageId}`, {
@@ -92,7 +93,7 @@ const deleteMessage = async (messageId, row) => {
 
     if (response.ok) {
       alert('Message deleted successfully!');
-      row.remove(); // 테이블에서 행 삭제
+      row.remove(); // UI에서 해당 행 삭제
     } else {
       throw new Error('Failed to delete message');
     }
@@ -100,6 +101,7 @@ const deleteMessage = async (messageId, row) => {
     console.error('Error deleting message:', error);
   }
 };
+
 
 const main = async () => {
   const button = document.getElementById('logout_button');
