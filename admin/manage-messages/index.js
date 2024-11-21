@@ -65,6 +65,15 @@ const fetchMessages = async () => {
         userCell.textContent = message.userId;
         row.appendChild(userCell);
 
+        const deleteCell = document.createElement('td');
+        deleteCell.style.textAlign = 'center';
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.setAttribute('data-id', message.id);
+        deleteButton.onclick = () => deleteMessage(message.id, row); 
+        deleteCell.appendChild(deleteButton);
+        row.appendChild(deleteCell);
+
         messageTableBody.appendChild(row);
       });
     } else {
@@ -72,6 +81,23 @@ const fetchMessages = async () => {
     }
   } catch (error) {
     console.error('Error fetching messages:', error);
+  }
+};
+
+const deleteMessage = async (messageId, row) => {
+  try {
+    const response = await fetch(`/message/delete_message/${messageId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      alert('Message deleted successfully!');
+      row.remove(); // 테이블에서 행 삭제
+    } else {
+      throw new Error('Failed to delete message');
+    }
+  } catch (error) {
+    console.error('Error deleting message:', error);
   }
 };
 

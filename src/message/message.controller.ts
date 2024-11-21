@@ -37,4 +37,26 @@ export class MessagesController {
       res.status(500).json({ error: 'Failed to fetch messages' });
     }
   }
+  
+  @Delete('delete_message/:id')
+  async deleteMessage(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const deleted = await this.messagesService.deleteMessage(id);
+      if (deleted) {
+        res.status(200).json({
+          success: true,
+          message: 'Message deleted successfully!',
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Message not found',
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      res.status(500).json({ error: 'Failed to delete message' });
+    }
+  }
+
 }
