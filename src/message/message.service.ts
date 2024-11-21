@@ -25,6 +25,6 @@ export class MessagesService {
   // 메시지 삭제
   async deleteMessage(id: string): Promise<boolean> {
     const result = await this.messagesRepo.delete(id); 
-    return result.affected > 0;
+    return result.affected !== null && result.affected > 0;
   }
 }
