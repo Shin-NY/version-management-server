@@ -25,11 +25,15 @@ export class MessagesService {
   // 메시지 삭제
   async deleteMessage(id: string): Promise<boolean> {
     const result = await this.messagesRepo.delete(id); 
-
-    // TypeScript strictNullChecks 처리
-    if (result.affected !== undefined && result.affected > 0) {
-      return true;
+    
+    if (!result) {
+      return false; 
     }
-    return false;
-  }
+    
+    if (result.affected == null) {
+      return false;
+    }
+
+    return result.affected > 0;
+    }
 }
