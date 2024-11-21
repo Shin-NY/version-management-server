@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateMessageInput {
+  @ApiProperty({ description: 'Message ID' })
+    id: string;
+
   @ApiProperty({ description: 'The user ID' })
     userId: string;
 

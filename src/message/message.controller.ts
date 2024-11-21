@@ -40,6 +40,7 @@ export class MessagesController {
   
   @Delete('delete_message/:id')
   async deleteMessage(@Param('id') id: string, @Res() res: Response) {
+    console.log('Received DELETE request for ID:', id);
     try {
       const deleted = await this.messagesService.deleteMessage(id);
       if (deleted) {
