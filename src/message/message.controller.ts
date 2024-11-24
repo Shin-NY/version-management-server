@@ -61,31 +61,35 @@ export class MessagesController {
   }
 
   @Post('send_message')
-  async sendMessage(
-    @Body('message') message: string,
-    @Res() res: Response,
-  ) {
+  async sendMessage(@Body('messageId') messageId: string, @Res() res: Response) {
     try {
-      const savedMessage = await this.messagesService.addMessageToQueue(message);
-      res.status(200).json({
-        success: true,
-        message: 'Message queued successfully!',
-        data: savedMessage,
-      });
+      const saved = await this.messagesService.saveMessageToSend(messageId); // 메시지 전송용 ID 저장
+      if (saved) {
+        res.status(200).json({
+          success: true,
+          message: 'Message ID saved for sending to clients!',
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'Failed to save message ID!',
+        });
+      }
     } catch (error) {
-      console.error('Error queuing message:', error);
-      res.status(500).json({ error: 'Failed to queue message' });
+      console.error('Error saving message ID for clients:', error);
+      res.status(500).json({ error: 'Failed to save message ID' });
     }
   }
-
-  @Get('fetch_queued_messages')
-  async fetchQueuedMessages(@Res() res: Response) {
+  
+  @Get('fetch_new_messages')
+  async fetchNewMessages(@Res() res: Response) {
     try {
-      const messages = await this.messagesService.fetchQueuedMessages();
+      const newMessageIds = await this.messagesService.fetchNewMessageIds(); // 새로운 메시지 ID 목록
+      const messages = await this.messagesService.fetchMessagesByIds(newMessageIds); // ID에 해당하는 메시지 가져오기
       res.status(200).json(messages);
     } catch (error) {
-      console.error('Error fetching queued messages:', error);
-      res.status(500).json({ error: 'Failed to fetch queued messages' });
+      console.error('Error fetching new messages:', error);
+      res.status(500).json({ error: 'Failed to fetch new messages' });
     }
   }
 
