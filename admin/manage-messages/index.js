@@ -53,6 +53,8 @@ const fetchMessages = async () => {
 
         const messageCell = document.createElement('td');
         messageCell.textContent = message.message;
+        messageCell.classList.add('clickable');
+        messageCell.addEventListener('click', () => SendMessage(message.message)); 
         row.appendChild(messageCell);
 
         const dateCell = document.createElement('td');
@@ -102,6 +104,32 @@ const deleteMessage = async (messageId, row) => {
   }
 };
 
+const SendMessage = async (message) => {
+  // 확인 창 표시
+  const userConfirmed = confirm(`이 메세지를 사용자들에게 보내겠습니까?\n\n"${message}"`);
+  if (!userConfirmed) {
+    return; // 사용자가 취소하면 아무것도 하지 않음
+  }
+
+  // 메시지 전송
+  try {
+    const response = await fetch('/message/send_message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    if (response.ok) {
+      alert('Message sent to clients successfully!');
+    } else {
+      throw new Error('Failed to send message to clients');
+    }
+  } catch (error) {
+    console.error('Error sending message to clients:', error);
+  }
+};
 
 const main = async () => {
   const button = document.getElementById('logout_button');

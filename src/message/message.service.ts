@@ -10,6 +10,8 @@ export class MessagesService {
   constructor(
     @InjectRepository(Message)
     private readonly messagesRepo: Repository<Message>,
+    @InjectRepository(MessageSend)
+    private readonly messageSendRepo: Repository<MessageSend>,
   ) {}
 
   // 메시지 저장
@@ -47,8 +49,8 @@ export class MessagesService {
 
   // 새로운 메시지 ID 목록 조회
   async fetchNewMessageIds(): Promise<string[]> {
-    const messageSends = await this.messageSendRepo.find();
-    return messageSends.map((ms) => ms.messageId); // 저장된 메시지 ID 반환
+    const messageSends: MessageSend[] = await this.messageSendRepo.find();
+  return messageSends.map((ms) => ms.messageId); 
   }
 
   // ID에 해당하는 메시지 조회
