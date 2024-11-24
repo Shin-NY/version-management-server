@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './entities/message_info.entity';
 import { CreateMessageInput } from './dtos/create_message.dto';
+import { MessageSend } from './entities/message_send.entity';
 
 @Injectable()
 export class MessagesService {
@@ -36,4 +37,22 @@ export class MessagesService {
 
     return result.affected > 0;
     }
+
+  // 메시지 ID 저장
+  async saveMessageToSend(messageId: string): Promise<boolean> {
+    const newMessageSend = this.messageSendRepo.create({ messageId });
+    const result = await this.messageSendRepo.save(newMessageSend);
+    return !!result;
+  }
+
+  // 새로운 메시지 ID 목록 조회
+  async fetchNewMessageIds(): Promise<string[]> {
+    const messageSends = await this.messageSendRepo.find();
+    return messageSends.map((ms) => ms.messageId); // 저장된 메시지 ID 반환
+  }
+
+  // ID에 해당하는 메시지 조회
+  async fetchMessagesByIds(ids: string[]): Promise<Message[]> {
+    return this.messagesRepo.findByIds(ids); // ID 배열로 메시지 조회
+  }
 }
