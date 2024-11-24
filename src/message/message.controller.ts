@@ -60,4 +60,33 @@ export class MessagesController {
     }
   }
 
+  @Post('send_message')
+  async sendMessage(
+    @Body('message') message: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const savedMessage = await this.messagesService.addMessageToQueue(message);
+      res.status(200).json({
+        success: true,
+        message: 'Message queued successfully!',
+        data: savedMessage,
+      });
+    } catch (error) {
+      console.error('Error queuing message:', error);
+      res.status(500).json({ error: 'Failed to queue message' });
+    }
+  }
+
+  @Get('fetch_queued_messages')
+  async fetchQueuedMessages(@Res() res: Response) {
+    try {
+      const messages = await this.messagesService.fetchQueuedMessages();
+      res.status(200).json(messages);
+    } catch (error) {
+      console.error('Error fetching queued messages:', error);
+      res.status(500).json({ error: 'Failed to fetch queued messages' });
+    }
+  }
+
 }
