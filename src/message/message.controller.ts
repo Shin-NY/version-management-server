@@ -81,16 +81,24 @@ export class MessagesController {
     }
   }
   
-  @Get('fetch_new_messages')
-  async fetchNewMessages(@Res() res: Response) {
-    try {
-      const newMessageIds = await this.messagesService.fetchNewMessageIds(); // 새로운 메시지 ID 목록
-      const messages = await this.messagesService.fetchMessagesByIds(newMessageIds); // ID에 해당하는 메시지 가져오기
-      res.status(200).json(messages);
-    } catch (error) {
-      console.error('Error fetching new messages:', error);
-      res.status(500).json({ error: 'Failed to fetch new messages' });
+  @Get('fetch_new_messages/:agentId')
+async fetchNewMessages(@Param('agentId') agentId: string, @Res() res: Response) {
+  try {    
+    const newMessageIds = await this.messagesService.fetchNewMessageIds(agentId);
+        
+    const messages = await this.messagesService.fetchMessagesByIds(newMessageIds);
+    
+    if (messages.length > 0) {    
+      const lastReadMessageId = newMessageIds[newMessageIds.length - 1];
+      await this.messagesService.markMessagesAsRead(agentId, lastReadMessageId);
     }
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error('Error fetching new messages:', error);
+    res.status(500).json({ error: 'Failed to fetch new messages' });
   }
+}
+
 
 }
