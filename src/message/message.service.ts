@@ -89,4 +89,23 @@ export class MessagesService {
   async fetchMessagesByIds(ids: string[]): Promise<Message[]> {
     return this.messagesRepo.findByIds(ids); // ID 배열로 메시지 조회
   }
+
+  // 현재 에이전트가 읽은 마지막 메시지 ID 가져오기
+  async fetchLastReadMessageId(agentId: string): Promise<string | null> {
+    const readStatus = await this.messageReadStatusRepo.findOne({ where: { agentId } });
+    return readStatus ? readStatus.messageId : null;
+  }
+
+  // 읽지 않은 메시지 ID 목록 조회
+  async fetchUnreadMessageIds(lastReadMessageId: string | null): Promise<string[]> {
+    let unreadMessages: MessageSend[];
+    if (lastReadMessageId) {
+      unreadMessages = await this.messageSendRepo.createQueryBuilder('messageSend')
+        .where('messageSend.id > :lastReadId', { lastReadId: lastReadMessageId })
+        .getMany();
+    } else {
+      unreadMessages = await this.messageSendRepo.find();
+    }
+    return unreadMessages.map((ms) => ms.messageId);
+  }
 }
