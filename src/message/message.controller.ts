@@ -86,22 +86,23 @@ export class MessagesController {
   async fetchNewMessages(@Param('agentId') agentId: string, @Res() res: Response) {
     try {
       console.log(`Received request for new messages from agent: ${agentId}`);  // 요청 확인을 위한 콘솔 출력
-      
-      // 현재 에이전트가 읽은 마지막 메시지 ID 가져오기
-      const lastReadMessageId = await this.messagesService.fetchLastReadMessageId(agentId);
-      
-      // 새로운 메시지 ID 목록에서 읽은 메시지 제외하고 가져오기
-      const unreadMessageIds = await this.messagesService.fetchUnreadMessageIds(lastReadMessageId);
-      
-      // 읽지 않은 메시지들 가져오기
-      const messages = await this.messagesService.fetchMessagesByIds(unreadMessageIds);
-      
-      if (messages.length > 0) {    
-        const latestMessageId = unreadMessageIds[unreadMessageIds.length - 1];
-        await this.messagesService.markMessagesAsRead(agentId, latestMessageId);
-        console.log(`Marked messages as read for agent: ${agentId}, up to message ID: ${latestMessageId}`); // 마킹 정보 출력
-      }
+      let newMessageIds = await this.messagesService.fetchNewMessageIds(agentId);
+          
+      if (newMessageIds.length === 0) {
+        console.log(`No new messages found for agent: ${agentId}. Fetching all messages.`);
+        const allMessages = await this.messagesService.fetchMessages();
+        newMessageIds = allMessages.map(msg => msg.id);
 
+        // 처음 설치시 모든 메시지를 읽은 것으로 저장
+        if (newMessageIds.length > 0) {
+          const lastReadMessageId = newMessageIds[newMessageIds.length - 1];
+          await this.messagesService.markMessagesAsRead(agentId, lastReadMessageId);
+          console.log(`Marked all messages as read for agent: ${agentId}, up to message ID: ${lastReadMessageId}`); // 마킹 정보 추적
+        }
+      }
+      
+      const messages = await this.messagesService.fetchMessagesByIds(newMessageIds);
+      
       res.status(200).json(messages);
     } catch (error) {
       console.error('Error fetching new messages:', error);
