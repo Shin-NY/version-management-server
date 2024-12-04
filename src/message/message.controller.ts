@@ -15,6 +15,7 @@ export class MessagesController {
     try {
       const newMessage =
         await this.messagesService.saveMessage(createMessageInput);
+      console.log('Saving message to SQLite:', newMessage);  // 저장되는 메시지 형식 출력
       res.status(200).json({
         success: true,
         message: 'Message saved successfully!',
@@ -82,23 +83,23 @@ export class MessagesController {
   }
   
   @Get('fetch_new_messages/:agentId')
-async fetchNewMessages(@Param('agentId') agentId: string, @Res() res: Response) {
-  try {    
-    const newMessageIds = await this.messagesService.fetchNewMessageIds(agentId);
-        
-    const messages = await this.messagesService.fetchMessagesByIds(newMessageIds);
-    
-    if (messages.length > 0) {    
-      const lastReadMessageId = newMessageIds[newMessageIds.length - 1];
-      await this.messagesService.markMessagesAsRead(agentId, lastReadMessageId);
+  async fetchNewMessages(@Param('agentId') agentId: string, @Res() res: Response) {
+    try {
+      console.log(`Received request for new messages from agent: ${agentId}`);  // 요청 확인을 위한 콘솔 출력
+      const newMessageIds = await this.messagesService.fetchNewMessageIds(agentId);
+          
+      const messages = await this.messagesService.fetchMessagesByIds(newMessageIds);
+      
+      if (messages.length > 0) {    
+        const lastReadMessageId = newMessageIds[newMessageIds.length - 1];
+        await this.messagesService.markMessagesAsRead(agentId, lastReadMessageId);
+        console.log(`Marked messages as read for agent: ${agentId}, up to message ID: ${lastReadMessageId}`); // 마킹 정보 출력
+      }
+
+      res.status(200).json(messages);
+    } catch (error) {
+      console.error('Error fetching new messages:', error);
+      res.status(500).json({ error: 'Failed to fetch new messages' });
     }
-
-    res.status(200).json(messages);
-  } catch (error) {
-    console.error('Error fetching new messages:', error);
-    res.status(500).json({ error: 'Failed to fetch new messages' });
   }
-}
-
-
 }
