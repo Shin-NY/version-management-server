@@ -15,8 +15,7 @@
 | 박용수 | 에이전트 버젼 관리, 통신 프로토콜 구현 |
 
 ## 기술 스택
-<img src="https://img.shields.io/badge/css-663399E?style=for-the-badge&logo=css"/>
-<img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
+<img src="https://img.shields.io/badge/css-663399E?style=for-the-badge&logo=css"/> <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
 <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white"/>
 <img src="https://img.shields.io/badge/JAVA-FE5F50"/>
 <img src="https://img.shields.io/badge/nestjs-E0234E?style=for-the-badge&logo=nestjs"/>
